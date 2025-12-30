@@ -2,23 +2,36 @@
 // CONFIGURACIÓN PRINCIPAL Y DEPENDENCIAS  
 // ======================================
 import express from 'express';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
 
-// ======================================
-// IMPORTAR RUTAS DE TODOS LOS MÓDULOS
-// ======================================
 import talentoHumanoRoutes from './src/routes/talentoHumanoRoutes.js';
 import capacidadTecnicaRoutes from './src/routes/capacidadTecnicaRoutes.js';
 import dotacionEquiposRoutes from './src/routes/dotacionEquiposRoutes.js';
-import infraestructuraRoutes from './src/routes/infrastructuraRoutes.js'; // Mantener nombre archivo pero variable corregida
+import infraestructuraRoutes from './src/routes/infraestructuraRoutes.js';
 import historiaClinicaRoutes from './src/routes/historiaClinicaRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
 import evaluacionesRoutes from './src/routes/evaluacionesRoutes.js';
 import protectedRoutes from './src/routes/protectedRoutes.js';
+
+const app = express();
+
+app.use(express.json());
+
+app.use('/talento-humano', talentoHumanoRoutes);
+app.use('/capacidad-tecnica', capacidadTecnicaRoutes);
+app.use('/dotacion-equipos', dotacionEquiposRoutes);
+app.use('/infraestructura', infraestructuraRoutes);
+app.use('/historia-clinica', historiaClinicaRoutes);
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
+app.use('/evaluaciones', evaluacionesRoutes);
+app.use('/protected', protectedRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
+
 
 // ======================================
 // CONFIGURACIÓN ES MODULES
@@ -250,5 +263,6 @@ const startServer = async () => {
 
 // Iniciar servidor
 startServer();
+
 
 export default app;
