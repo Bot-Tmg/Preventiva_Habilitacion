@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Habilitación - Acceso Seguro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #7e22ce;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --darker: #111827;
+            --light: #f8fafc;
+            --gray: #6b7280;
+            --gray-light: #e5e7eb;
+            --border-radius: 12px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #6d28d9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            min-height: 700px;
+            position: relative;
+        }
+
+        /* Sección de Bienvenida */
+        .welcome-section {
+            flex: 1.2;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-header {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .welcome-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 90%;
+        }
+
+        .features {
+            list-style: none;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features li {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .features i {
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .welcome-footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 40px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .security-badge i {
+            margin-right: 10px;
+            color: var(--success);
+        }
+
+        /* Sección de Login */
+        .login-section {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--light);
+            position: relative;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo-icon i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .logo h2 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 6px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-light);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            z-index: 1;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--dark);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn:disabled::before {
+            display: none;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            display: none;
+            animation: slideIn 0.3s ease;
+            font-weight: 500;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--gray);
+            display: none;
+            border-left: 4px solid var(--primary);
+        }
+
+        .admin-pin-info {
+            background: #fff3cd;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+
+        .admin-pin-info i {
+            margin-right: 8px;
+            color: #ffc107;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .form-footer i {
+            margin-right: 5px;
+        }
+
+        .test-credentials {
+            background: #e7f3ff;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin-top: 25px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .test-credentials h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .test-credentials ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .test-credentials li {
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .test-credentials li i {
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--gray-light);
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .weak { width: 30%; background: var(--danger); }
+        .medium { width: 60%; background: var(--warning); }
+        .strong { width: 100%; background: var(--success); }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            left: 10%;
+            animation: float 15s infinite linear;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            right: 10%;
+            animation: float 20s infinite linear reverse;
+        }
+
+        .shape-3 {
+            width: 70px;
+            height: 70px;
+            top: 50%;
+            right: 20%;
+            animation: float 12s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -50px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            .welcome-section, .login-section {
+                padding: 40px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .welcome-section {
+                padding: 40px 30px;
+            }
+            
+            .login-section {
+                padding: 40px 30px;
+            }
+            
+            .welcome-header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-section, .login-section {
+                padding: 30px 20px;
+            }
+            
+            .welcome-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .logo h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sección de Bienvenida -->
+        <div class="welcome-section">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+            
+            <div class="welcome-header">
+                <h1>Plataforma de Habilitación</h1>
+                <p>Sistema integral para la evaluación y habilitación de instituciones de salud. Gestiona todos los procesos de certificación en un solo lugar.</p>
+                
+                <ul class="features">
+                    <li><i class="fas fa-shield-alt"></i> Evaluación de estándares de calidad</li>
+                    <li><i class="fas fa-clipboard-check"></i> Gestión de documentación</li>
+                    <li><i class="fas fa-chart-line"></i> Reportes y estadísticas avanzadas</li>
+                    <li><i class="fas fa-users"></i> Gestión de evaluadores</li>
+                    <li><i class="fas fa-building"></i> Control de instituciones</li>
+                </ul>
+            </div>
+            
+            <div class="welcome-footer">
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>Sistema seguro con encriptación de extremo a extremo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Login/Registro -->
+        <div class="login-section">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-hospital-alt"></i>
+                </div>
+                <h2>Sistema de Acceso</h2>
+                <p>Ingresa a tu cuenta o regístrate</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('login')">Iniciar Sesión</div>
+                <div class="tab" onclick="showTab('register')">Registrarse</div>
+            </div>
+
+            <!-- Formulario de Login -->
+            <form id="login-form" onsubmit="event.preventDefault(); login();">
+                <div class="form-group">
+                    <label for="login-email">Correo Electrónico</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="login-email" placeholder="ejemplo@email.com" value="">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="login-password" placeholder="Contraseña" value="">
+                        <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+
+            <!-- Formulario de Registro -->
+            <form id="register-form" style="display: none;" onsubmit="event.preventDefault(); register();">
+                <div class="form-group">
+                    <label for="register-name">Nombre Completo</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="register-name" placeholder="Tu nombre completo">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Correo Electrónico</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="register-email" placeholder="ejemplo@correo.com">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="register-password" placeholder="Mínimo 8 caracteres" onkeyup="checkPasswordStrength(this.value)">
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="password-strength-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-role">Rol</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user-tag input-icon"></i>
+                        <select id="register-role" onchange="toggleAdminPinField()">
+                            <option value="">Selecciona un rol</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="evaluador">Evaluador</option>
+                            <option value="institucion">Institución</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" id="admin-pin-group" style="display: none;">
+                    <label for="register-admin-pin">PIN de Administrador</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="password" id="register-admin-pin" placeholder="PIN único para administradores">
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-admin-pin')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="admin-pin-info" id="admin-pin-info">
+                        <i class="fas fa-info-circle"></i> Solo los administradores existentes pueden proporcionar este PIN.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="register-btn">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                </button>
+            </form>
+
+            
+            <!-- Mensajes -->
+            <div id="message" class="message"></div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Procesando...</p>
+            </div>
+
+            <!-- Debug Info -->
+            <div class="debug-info" id="debug-info"></div>
+
+            
+
+            <div class="form-footer">
+                <p><i class="fas fa-shield-alt"></i> Sistema seguro • Versión 2.1.0</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001';
+        const ADMIN_PIN = 'ADMIN2024'; // PIN único para administradores
+        
+        // Verificar si ya está logueado
+        if (localStorage.getItem('token')) {
+            window.location.href = 'dashboard.html';
+        }
+
+        function showTab(tabName) {
+            // Ocultar todos los formularios
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            
+            // Remover clase active de todas las pestañas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar formulario seleccionado y activar pestaña
+            document.getElementById(tabName + '-form').style.display = 'block';
+            event.target.classList.add('active');
+            
+            // Limpiar mensajes
+            hideMessage();
+            hideDebugInfo();
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = event.currentTarget.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function toggleAdminPinField() {
+            const role = document.getElementById('register-role').value;
+            const adminPinGroup = document.getElementById('admin-pin-group');
+            const adminPinInfo = document.getElementById('admin-pin-info');
+            
+            if (role === 'administrador') {
+                adminPinGroup.style.display = 'block';
+                adminPinInfo.style.display = 'block';
+            } else {
+                adminPinGroup.style.display = 'none';
+                adminPinInfo.style.display = 'none';
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('password-strength-bar');
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
+            if (password.match(/\d/)) strength += 1;
+            if (password.match(/[^a-zA-Z\d]/)) strength += 1;
+            
+            strengthBar.className = 'password-strength-bar';
+            
+            if (password.length === 0) {
+                strengthBar.style.width = '0';
+            } else if (strength <= 1) {
+                strengthBar.classList.add('weak');
+            } else if (strength <= 2) {
+                strengthBar.classList.add('medium');
+            } else {
+                strengthBar.classList.add('strong');
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (!email || !password) {
+                showMessage('Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            // Deshabilitar botón durante la petición
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
+            showLoading(true);
+            hideMessage();
+            
+            try {
+                console.log('🔄 Enviando petición de login...');
+                
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('📨 Respuesta recibida:', response.status);
+                
+                const data = await response.json();
+                showLoading(false);
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                
+                if (data.success && data.user) {
+                    showMessage(`✅ ${data.message} Redirigiendo...`, 'success');
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    console.log('💾 Usuario guardado en localStorage:', data.user);
+                    
+                    // Redirigir después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showMessage(data.message || '❌ Error en el inicio de sesión', 'error');
+                    showDebugInfo(`Status: ${response.status} | Response: ${JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                showLoading(false);
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                
+                console.error('❌ Error de conexión:', error);
+                showMessage('❌ Error de conexión con el servidor. Verifica que el backend esté corriendo en puerto 3001.', 'error');
+                showDebugInfo(`Error: ${error.message}`);
+            }
+        }
+
+        async function register() {
+            const full_name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const role = document.getElementById('register-role').value;
+            const adminPin = document.getElementById('register-admin-pin').value;
+            const registerBtn = document.getElementById('register-btn');
+            
+            if (!full_name || !email || !password || !role) {
+                showMessage('Por favor completa todos los campos', 'error');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showMessage('La contraseña debe tener al menos 8 caracteres', 'error');
+                return;
+            }
+            
+            // Validar PIN de administrador si se seleccionó ese rol
+            if (role === 'administrador') {
+                if (!adminPin) {
+                    showMessage('El PIN de administrador es requerido para este rol', 'error');
+                    return;
+                }
+                
+                if (adminPin !== ADMIN_PIN) {
+                    showMessage('PIN de administrador incorrecto', 'error');
+                    return;
+                }
+            }
+            
+            // Deshabilitar botón durante la petición
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+            showLoading(true);
+            hideMessage();
+            
+            try {
+                console.log('🔄 Enviando petición de registro...');
+                
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        full_name, 
+                        email, 
+                        password, 
+                        role,
+                        user_type: role 
+                    })
+                });
+                
+                console.log('📨 Respuesta recibida:', response.status);
+                
+                const data = await response.json();
+                showLoading(false);
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Crear Cuenta';
+                
+                if (data.success) {
+                    showMessage('✅ ' + data.message + ' Redirigiendo al login...', 'success');
+                    
+                    // Limpiar formulario
+                    document.getElementById('register-form').reset();
+                    document.getElementById('admin-pin-group').style.display = 'none';
+                    document.getElementById('admin-pin-info').style.display = 'none';
+                    document.getElementById('password-strength-bar').style.width = '0';
+                    
+                    // Cambiar a pestaña de login después de 2 segundos
+                    setTimeout(() => showTab('login'), 2000);
+                } else {
+                    showMessage(data.message || '❌ Error en el registro', 'error');
+                    showDebugInfo(`Status: ${response.status} | Response: ${JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                showLoading(false);
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Crear Cuenta';
+                
+                console.error('❌ Error de conexión:', error);
+                showMessage('❌ Error de conexión con el servidor', 'error');
+                showDebugInfo(`Error: ${error.message}`);
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(() => {
+                hideMessage();
+            }, 5000);
+        }
+
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+
+        function showDebugInfo(info) {
+            const debugDiv = document.getElementById('debug-info');
+            debugDiv.textContent = info;
+            debugDiv.style.display = 'block';
+        }
+
+        function hideDebugInfo() {
+            document.getElementById('debug-info').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // Enter key support
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const activeTab = document.querySelector('.tab.active').textContent;
+                if (activeTab === 'Iniciar Sesión') {
+                    login();
+                } else {
+                    register();
+                }
+            }
+        });
+
+        // Verificar conexión al cargar la página
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                if (response.ok) {
+                    console.log('✅ Backend conectado correctamente');
+                }
+            } catch (error) {
+                console.warn('⚠️ No se pudo conectar al backend:', error);
+            }
+        });
+
+        console.log('🚀 Frontend cargado correctamente');
+        console.log('🌐 API URL:', API_URL);
+        console.log('🔐 PIN de administrador configurado');
+    </script>
+</body>
+</html>

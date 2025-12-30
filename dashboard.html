@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Plataforma de Habilitación</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: rgb(255, 0, 0);
+            --primary-dark: #3a0ca3;
+            --primary-light: #4895ef;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --success-dark: #38b2ac;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: #f5f7fb;
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #e02d71;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 37, 133, 0.3);
+        }
+
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: rotateGlow 20s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .welcome-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .module-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .module-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-card:nth-child(3) { animation-delay: 0.3s; }
+        .module-card:nth-child(4) { animation-delay: 0.4s; }
+        .module-card:nth-child(5) { animation-delay: 0.5s; }
+        .module-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .module-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(45deg) translateX(-100%);
+            }
+            100% {
+                transform: rotate(45deg) translateX(100%);
+            }
+        }
+
+        .module-card:hover .module-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .module-card h3 {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .module-card p {
+            color: var(--gray);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .module-action {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .module-card:hover .module-action {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .module-card:hover .module-action::before {
+            left: 100%;
+        }
+
+        .dashboard-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .recent-activity {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out 0.7s forwards;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+
+        .activity-item:nth-child(1) { animation-delay: 0.8s; }
+        .activity-item:nth-child(2) { animation-delay: 0.9s; }
+        .activity-item:nth-child(3) { animation-delay: 1.0s; }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .activity-item:hover {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
+            transform: translateX(5px);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: floatParticle 20s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translate(100px, -50px) rotate(90deg) scale(1.2);
+            }
+            50% {
+                transform: translate(50px, 100px) rotate(180deg) scale(0.8);
+            }
+            75% {
+                transform: translate(-100px, 50px) rotate(270deg) scale(1.1);
+            }
+        }
+
+        .debug-panel {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            display: none;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .welcome-section {
+                padding: 2rem 1rem;
+            }
+
+            .welcome-content h1 {
+                font-size: 2rem;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Efecto de partículas flotantes -->
+    <div class="floating-particles" id="floating-particles"></div>
+    
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-hospital-alt"></i>
+            <span>Plataforma de Habilitación</span>
+        </div>
+        
+        <div class="user-menu">
+            <div class="user-info">
+                <div class="user-name" id="user-name">Cargando...</div>
+                <div class="user-role" id="user-role"></div>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar Sesión
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Sección de bienvenida -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1 id="welcome-title">Bienvenido</h1>
+                <p>Gestiona los documentos de habilitación de cada modulo, para mantenernos a el tanto con las revisiones</p>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="main-content">
+                <!-- Módulos de evaluación -->
+                <div>
+                    <h2 class="section-title">
+                        <i class="fas fa-th-large"></i>
+                        Módulos de Documentos
+                    </h2>
+                    
+                    <div class="modules-grid">
+                        <!-- Capacidad Técnica -->
+                        <a href="capacidad-tecnica.html" class="module-card">
+                            <div class="module-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h3>Capacidad Técnica</h3>
+                            <p>Evaluar procesos administrativos, manuales y documentación legal de la institución.</p>
+                            <div class="module-action">
+                                <i class="fas fa-arrow-right"></i> Ingresar al Módulo
+                            </div>
+                        </a>
+                        
+                        <!-- Dotación de Equipos -->
+                        <a href="dotacion-equipos.html" class="module-card">
+                            <div class="module-icon">
+                                <i class="fas fa-laptop-medical"></i>
+                            </div>
+                            <h3>Dotación de Equipos</h3>
+                            <p>Verificar equipos médicos, mantenimiento y calibración de instrumentos.</p>
+                            <div class="module-action">
+                                <i class="fas fa-arrow-right"></i> Ingresar al Módulo  
+                            </div>
+                        </a>
+                        
+                        <!-- Talento Humano -->
+                        <a href="talento-humano.html" class="module-card">
+                            <div class="module-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Talento Humano</h3>
+                            <p>Evaluar personal calificado, formación continua y evaluación de desempeño del personal.</p>
+                            <div class="module-action">
+                                <i class="fas fa-arrow-right"></i> Ingresar al Módulo
+                            </div>
+                        </a>
+                        
+                        <!-- Infraestructura -->
+                        <a href="infrastructura.html" class="module-card">
+                            <div class="module-icon">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            <h3>Infraestructura</h3>
+                            <p>Verificar instalaciones físicas, bioseguridad y equipos biomédicos.</p>
+                            <div class="module-action">
+                                <i class="fas fa-arrow-right"></i> Ingresar al Módulo
+                            </div>
+                        </a>
+                        
+                        <!-- Historia Clínica -->
+                        <a href="historia-clinica.html" class="module-card">
+                            <div class="module-icon">
+                                <i class="fas fa-file-medical"></i>
+                            </div>
+                            <h3>Historia Clínica</h3>
+                            <p>Revisar formatos, digitalización y confidencialidad de registros médicos.</p>
+                            <div class="module-action">
+                                <i class="fas fa-arrow-right"></i> Ingresar al Módulo
+                            </div>
+                        </a>
+                        
+                        <!-- Medicamentos -->
+                        <a href="modulo-medicamentos.html" class="module-card">
+                            <div class="module-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <h3>Medicamentos</h3>
+                            <p>Control de inventario, caducidad y almacenamiento de medicamentos.</p>
+                            <div class="module-action">
+                                <i class="fas fa-arrow-right"></i> Ingresar al Módulo
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            
+
+        <!-- Panel de debug (oculto en producción) -->
+        <div class="debug-panel" id="debug-panel">
+            <strong>Información de Debug:</strong><br>
+            <span id="debug-content">Cargando...</span>
+        </div>
+    </div>
+
+    <script>
+        // ======================================
+        // CONFIGURACIÓN INICIAL Y VERIFICACIÓN
+        // ======================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Dashboard cargado correctamente');
+            
+            // Crear partículas flotantes
+            createFloatingParticles();
+            
+            // Verificar autenticación
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            console.log('🔐 Token:', token ? '✅ Presente' : '❌ Ausente');
+            console.log('👤 Usuario:', user);
+            
+            // Mostrar información de debug
+            document.getElementById('debug-content').innerHTML = `
+                Token: ${token ? '✅ Presente' : '❌ Ausente'}<br>
+                Usuario: ${user.name || 'No identificado'}<br>
+                Rol: ${user.role || 'No definido'}<br>
+                Última actualización: ${new Date().toLocaleString()}
+            `;
+
+            // Redirigir si no hay sesión
+            if (!token) {
+                console.warn('⚠️ No hay sesión activa, redirigiendo al login...');
+                Swal.fire({
+                    title: 'Sesión Expirada',
+                    text: 'No hay una sesión activa. Serás redirigido al login.',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido',
+                    allowOutsideClick: false
+                }).then(() => {
+                    window.location.href = 'frontend-login.html';
+                });
+                return;
+            }
+
+            // Actualizar interfaz con información del usuario
+            if (user && user.name) {
+                document.getElementById('user-name').textContent = user.name;
+                document.getElementById('user-role').textContent = user.role === 'admin' ? 'Administrador' : 'Evaluador';
+                document.getElementById('welcome-title').textContent = `Bienvenido de vuelta, ${user.name}`;
+                
+                // Personalizar según el rol
+                if (user.role === 'admin') {
+                    document.querySelector('.navbar-brand span').textContent += ' - Admin';
+                }
+                
+                console.log('✅ Interfaz actualizada con datos del usuario');
+            } else {
+                document.getElementById('user-name').textContent = 'Usuario no identificado';
+                document.getElementById('welcome-title').textContent = 'Bienvenido';
+                console.warn('⚠️ Usuario no identificado en localStorage');
+            }
+        });
+
+        // ======================================
+        // CREAR PARTÍCULAS FLOTANTES
+        // ======================================
+
+        function createFloatingParticles() {
+            const particlesContainer = document.getElementById('floating-particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 60 + 20;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.opacity = Math.random() * 0.1 + 0.05;
+                
+                const duration = Math.random() * 30 + 20;
+                const delay = Math.random() * 5;
+                particle.style.animation = `floatParticle ${duration}s infinite linear ${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // ======================================
+        // FUNCIÓN CERRAR SESIÓN
+        // ======================================
+
+        function logout() {
+            console.log('🚪 Usuario solicitó cerrar sesión');
+            
+            Swal.fire({
+                title: '¿Cerrar sesión?',
+                text: '¿Estás seguro de que deseas salir del sistema?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, cerrar sesión',
+                cancelButtonText: 'Cancelar',
+                backdrop: true,
+                allowOutsideClick: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log('✅ Confirmado, cerrando sesión...');
+                    
+                    // Mostrar feedback de cierre
+                    Swal.fire({
+                        title: 'Cerrando Sesión',
+                        text: 'Sesión finalizada correctamente',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        willClose: () => {
+                            // Limpiar localStorage
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
+                            
+                            console.log('🧹 localStorage limpiado');
+                            console.log('🔄 Redirigiendo al login...');
+                            
+                            // Redirigir al login
+                            window.location.href = 'frontend-login.html';
+                        }
+                    });
+                } else {
+                    console.log('✅ Cierre de sesión cancelado');
+                }
+            });
+        }
+
+        // ======================================
+        // NAVEGACIÓN
+        // ======================================
+
+        function navigateTo(destination) {
+            console.log(`📍 Navegando a: ${destination}`);
+            
+            // En una implementación real, esto redirigiría a diferentes páginas
+            Swal.fire({
+                title: 'Funcionalidad en desarrollo',
+                text: `La navegación a ${destination} estará disponible pronto.`,
+                icon: 'info',
+                confirmButtonText: 'Entendido'
+            });
+        }
+
+        // ======================================
+        // MANEJO DE ERRORES Y SEGURIDAD
+        // ======================================
+
+        // Verificar periodicamente la sesión (cada 5 minutos)
+        setInterval(() => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn('⚠️ Sesión perdida, redirigiendo...');
+                window.location.href = 'frontend-login.html';
+            }
+        }, 300000);
+
+        console.log('🔧 Dashboard inicializado correctamente');
+    </script>
+</body>
+</html>
