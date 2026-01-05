@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.env
+.git
+.dockerignore
+Dockerfile
+README.md
+
+# Ignore local build/test artifacts
+coverage
+dist
+
+# Mac / Windows
+.DS_Store
+Thumbs.db

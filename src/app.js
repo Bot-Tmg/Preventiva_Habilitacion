@@ -1,105 +1,85 @@
-import express from 'express';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
-// Middlewares básicos
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
-// Recorre recursivamente y devuelve archivos .js
-async function* walk(dir) {
-  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
-    const res = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      yield* walk(res);
-    } else if (entry.isFile() && res.endsWith('.js')) {
-      yield res;
-    }
-  }
+// Simple kebab-case converter (handles camelCase, snake_case, spaces)
+function toKebabCase(name) {
+  return name
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')    // fooBar -> foo-Bar
+    .replace(/[_\s]+/g, '-')                 // foo_bar or "foo bar" -> foo-bar
+    .toLowerCase();                           // -> foo-bar
 }
 
-// Convierte la ruta de archivo en el path de montaje
-function computeMountPath(routesRoot, filePath) {
-  let rel = path.relative(routesRoot, filePath).replace(/\\/g, '/'); // normalize
-  rel = rel.replace(/\.js$/, '');
-  if (rel.endsWith('/index')) rel = rel.slice(0, -6);
-  rel = '/' + rel;
-  rel = rel.replace(/\/+/g, '/');
-  if (rel === '/index' || rel === '/') return '/';
-  if (rel.length > 1 && rel.endsWith('/')) rel = rel.slice(0, -1);
-  return rel;
-}
+// Health endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+  });
+});
 
-// Carga e intenta montar cada archivo de ruta
-async function loadRoutes() {
-  const routesRoot = path.join(__dirname, 'routes');
-  try {
-    await fs.access(routesRoot);
-  } catch (err) {
-    console.warn(`Routes directory not found at ${routesRoot}, skipping auto-route loading.`);
-    return;
-  }
-
-  for await (const file of walk(routesRoot)) {
-    try {
-      const fileUrl = pathToFileURL(file).href;
-      const mod = await import(fileUrl);
-
-      const mountPath = computeMountPath(routesRoot, file);
-
-      // Determinar qué se exportó (default, router o función)
-      const exported = mod.default ?? mod.router ?? mod;
-
-      if (!exported) {
-        console.warn(`No export found in route file ${file}, skipping.`);
-        continue;
-      }
-
-      // Si parece un Router (objeto/función con propiedades de express), hacer app.use
-      const isRouterLike =
-        ((typeof exported === 'function') && (exported.stack || exported.use || exported.handle)) ||
-        ((typeof exported === 'object') && (exported.stack || exported.use || exported.handle));
-
-      if (isRouterLike) {
-        app.use(mountPath, exported);
-        console.log(`Mounted router from ${file} at ${mountPath}`);
-      } else if (typeof exported === 'function') {
-        // Si es función, invocarla con (app, mountPath). Si devuelve router, montarlo.
-        const maybeRouter = await exported(app, mountPath);
-        if (maybeRouter && (maybeRouter.stack || maybeRouter.use || maybeRouter.handle)) {
-          app.use(mountPath, maybeRouter);
-          console.log(`Mounted returned router from ${file} at ${mountPath}`);
-        } else {
-          console.log(`Invoked function export in ${file} (assumed it registered routes)`);
+// Auto-mount routers from src/routes
+const routesDir = path.join(__dirname, 'routes');
+if (fs.existsSync(routesDir)) {
+  const walk = (dir, baseMount = '') => {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        const subMount = path.join(baseMount, toKebabCase(entry.name));
+        walk(fullPath, subMount);
+      } else if (entry.isFile() && (entry.name.endsWith('.js') || entry.name.endsWith('.ts'))) {
+        const name = path.basename(entry.name, path.extname(entry.name));
+        const mountName = name === 'index' ? baseMount || '/' : path.join(baseMount, toKebabCase(name));
+        // Normalize mount path to POSIX style and ensure it starts with '/'
+        const mountPath = mountName.replace(/\\\\/g, '/').replace(/\/\\/g, '/');
+        const finalMount = mountPath === '' ? '/' : (mountPath.startsWith('/') ? mountPath : `/${mountPath}`);
+        try {
+          // Require the router. For TypeScript or ESM setups this may need adjustment.
+          const router = require(fullPath);
+          // Router may be exported as module.exports = router or as default
+          const actualRouter = router && router.default ? router.default : router;
+          if (actualRouter && typeof actualRouter === 'function') {
+            app.use(finalMount, actualRouter);
+            console.log(`Mounted router: ${fullPath} -> ${finalMount}`);
+          } else {
+            console.warn(`File ${fullPath} did not export a router function; skipping.`);
+          }
+        } catch (err) {
+          console.error(`Failed to mount router ${fullPath}:`, err.message);
         }
-      } else if (typeof exported === 'object') {
-        app.use(mountPath, exported);
-        console.log(`Mounted object export from ${file} at ${mountPath}`);
-      } else {
-        console.warn(`Unsupported export type in ${file}, skipping.`);
       }
-    } catch (err) {
-      console.error(`Failed to load route ${file}:`, err);
     }
-  }
+  };
+
+  walk(routesDir);
+} else {
+  console.info('No routes directory found at src/routes — skipping auto-mount.');
 }
 
-async function start() {
-  await loadRoutes();
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Not Found' });
+});
 
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+});
+
+// If this file is run directly, start the server
+if (require.main === module) {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    console.log(`App listening on port ${port}`);
   });
 }
 
-start().catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+module.exports = app;
