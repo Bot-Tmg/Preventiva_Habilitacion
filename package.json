@@ -2,8 +2,8 @@
   "name": "plataforma-habilitacion-backend",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "dev": "node --watch app.js"
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
