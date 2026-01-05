@@ -1,85 +1,78 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+import talentoHumanoRoutes from './routes/talentoHumanoRoutes.js';
+import capacidadTecnicaRoutes from './routes/capacidadTecnicaRoutes.js';
+import dotacionEquiposRoutes from './routes/dotacionEquiposRoutes.js';
+import infraestructuraRoutes from './routes/infraestructuraRoutes.js';
+import historiaClinicaRoutes from './routes/historiaClinicaRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import evaluacionesRoutes from './routes/evaluacionesRoutes.js';
+import protectedRoutes from './routes/protectedRoutes.js';
+
+import { initializeDB } from './config/sqlite.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
-// Simple kebab-case converter (handles camelCase, snake_case, spaces)
-function toKebabCase(name) {
-  return name
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')    // fooBar -> foo-Bar
-    .replace(/[_\s]+/g, '-')                 // foo_bar or "foo bar" -> foo-bar
-    .toLowerCase();                           // -> foo-bar
-}
+// Servir HTML desde la raíz del proyecto
+app.use(express.static(path.join(__dirname, '..')));
 
-// Health endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    uptime: process.uptime(),
-    timestamp: Date.now(),
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+const modulos = [
+  'talento_humano',
+  'capacidad_tecnica',
+  'dotacion_equipos',
+  'infraestructura',
+  'historia_clinica'
+];
+
+const initializeUploads = () => {
+  modulos.forEach(m => {
+    const dir = path.join(__dirname, 'uploads', m);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   });
+};
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend-login.html'));
 });
 
-// Auto-mount routers from src/routes
-const routesDir = path.join(__dirname, 'routes');
-if (fs.existsSync(routesDir)) {
-  const walk = (dir, baseMount = '') => {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        const subMount = path.join(baseMount, toKebabCase(entry.name));
-        walk(fullPath, subMount);
-      } else if (entry.isFile() && (entry.name.endsWith('.js') || entry.name.endsWith('.ts'))) {
-        const name = path.basename(entry.name, path.extname(entry.name));
-        const mountName = name === 'index' ? baseMount || '/' : path.join(baseMount, toKebabCase(name));
-        // Normalize mount path to POSIX style and ensure it starts with '/'
-        const mountPath = mountName.replace(/\\\\/g, '/').replace(/\/\\/g, '/');
-        const finalMount = mountPath === '' ? '/' : (mountPath.startsWith('/') ? mountPath : `/${mountPath}`);
-        try {
-          // Require the router. For TypeScript or ESM setups this may need adjustment.
-          const router = require(fullPath);
-          // Router may be exported as module.exports = router or as default
-          const actualRouter = router && router.default ? router.default : router;
-          if (actualRouter && typeof actualRouter === 'function') {
-            app.use(finalMount, actualRouter);
-            console.log(`Mounted router: ${fullPath} -> ${finalMount}`);
-          } else {
-            console.warn(`File ${fullPath} did not export a router function; skipping.`);
-          }
-        } catch (err) {
-          console.error(`Failed to mount router ${fullPath}:`, err.message);
-        }
-      }
-    }
-  };
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/talento-humano', talentoHumanoRoutes);
+app.use('/api/capacidad-tecnica', capacidadTecnicaRoutes);
+app.use('/api/dotacion-equipos', dotacionEquiposRoutes);
+app.use('/api/infraestructura', infraestructuraRoutes);
+app.use('/api/historia-clinica', historiaClinicaRoutes);
+app.use('/api/evaluaciones', evaluacionesRoutes);
+app.use('/api/protected', protectedRoutes);
 
-  walk(routesDir);
-} else {
-  console.info('No routes directory found at src/routes — skipping auto-mount.');
-}
-
-// 404 handler
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Not Found' });
+app.get('/api/health', (_, res) => {
+  res.json({ ok: true });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
-});
+const PORT = process.env.PORT || 3000;
 
-// If this file is run directly, start the server
-if (require.main === module) {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+const start = async () => {
+  await initializeDB();
+  initializeUploads();
+  app.listen(PORT, () => {
+    console.log(`🚀 Backend corriendo en puerto ${PORT}`);
   });
-}
+};
 
-module.exports = app;
+start();
+
+export default app;
