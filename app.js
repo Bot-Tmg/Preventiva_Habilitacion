@@ -1,5 +1,5 @@
 // ======================================
-// IMPORTS
+// IMPORTS (ES MODULES)
 // ======================================
 import express from 'express';
 import cors from 'cors';
@@ -8,7 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // ======================================
-// RUTAS (⚠️ SIN src)
+// RUTAS
 // ======================================
 import talentoHumanoRoutes from './routes/talentoHumanoRoutes.js';
 import capacidadTecnicaRoutes from './routes/capacidadTecnicaRoutes.js';
@@ -29,16 +29,23 @@ import { initializeDB } from './config/sqlite.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ======================================
 const app = express();
 
+// ======================================
+// MIDDLEWARES
 // ======================================
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ======================================
-app.use(express.static(path.join(__dirname, 'frontend')));
+// FRONTEND (HTML EN RAÍZ)
+// ======================================
+app.use(express.static(path.join(__dirname, '..')));
+
+// ======================================
+// UPLOADS
+// ======================================
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ======================================
@@ -58,17 +65,22 @@ const initializeUploads = () => {
 };
 
 // ======================================
+// ROOT
+// ======================================
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend-login.html'));
+});
+
+// ======================================
 // API
 // ======================================
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-
 app.use('/api/talento-humano', talentoHumanoRoutes);
 app.use('/api/capacidad-tecnica', capacidadTecnicaRoutes);
 app.use('/api/dotacion-equipos', dotacionEquiposRoutes);
 app.use('/api/infraestructura', infraestructuraRoutes);
 app.use('/api/historia-clinica', historiaClinicaRoutes);
-
 app.use('/api/evaluaciones', evaluacionesRoutes);
 app.use('/api/protected', protectedRoutes);
 
@@ -89,4 +101,6 @@ const start = async () => {
 };
 
 start();
+
 export default app;
+
